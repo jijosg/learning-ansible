@@ -1,0 +1,5 @@
+---
+- name: Update my binaries
+  hosts: local
+  roles:
+    - update-binaries

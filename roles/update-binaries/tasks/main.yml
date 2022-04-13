@@ -1,0 +1,27 @@
+---
+- name: Tap brew 
+  community.general.homebrew_tap:
+    name: anchore/syft,anchore/grype
+- name: Update cli applications
+  community.general.homebrew:
+    path: ~/.linuxbrew/bin/brew
+    name: 
+      - "{{ k9s }}"
+      - "{{ exa }}"
+      - "{{ yq }}"
+      - "{{ jq }}"
+      - syft
+      - grype
+      - hugo
+      - go
+    state: latest
+- name: Install skopeo
+  apt: 
+    name: skopeo
+    state: latest
+- name: Update python packages
+  pip:
+    name: 
+      - tern
+    state: latest
+
