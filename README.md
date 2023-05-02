@@ -11,5 +11,5 @@ This repository contains a series of Ansible playbooks that demonstrate how to u
 
 ## Installing asdf
 
-python3 -m pip install --user ansible
+python3 -m pip install --user ansible  
 `ansible-galaxy install cimon-io.asdf`
