@@ -2,3 +2,4 @@ k9s: k9s
 exa: exa
 jq: jq
 yq: yq
+k8s: k3d

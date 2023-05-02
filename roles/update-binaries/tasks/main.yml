@@ -7,17 +7,11 @@
     path: ~/.linuxbrew/bin/brew
     name: 
       - "{{ k9s }}"
-      - "{{ exa }}"
       - "{{ yq }}"
       - "{{ jq }}"
-      - syft
-      - grype
-      - hugo
-      - go
-    state: latest
-- name: Install skopeo
-  apt: 
-    name: skopeo
+      - "{{ k8s }}"
+      - stern
+      - helm
     state: latest
 - name: Update python packages
   pip:
