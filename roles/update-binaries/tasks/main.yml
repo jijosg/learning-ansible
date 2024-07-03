@@ -1,21 +1,62 @@
 ---
-- name: Tap brew 
-  community.general.homebrew_tap:
-    name: anchore/syft,anchore/grype
-- name: Update cli applications
-  community.general.homebrew:
-    path: ~/.linuxbrew/bin/brew
-    name: 
-      - "{{ k9s }}"
-      - "{{ yq }}"
-      - "{{ jq }}"
-      - "{{ k8s }}"
-      - stern
-      - helm
+# install curl
+- name: Install curl
+  become: yes
+  package:
+    name: curl
+    state: present
+# install derailed/k9s 
+- name: Install k9s
+  become: yes
+  shell: |
+    curl -LsO https://github.com/derailed/k9s/releases/download/{{ k9s }}/k9s_Linux_amd64.tar.gz
+    tar -xvzf k9s_Linux_amd64.tar.gz -C /tmp k9s
+    chmod a+x /tmp/k9s
+    sudo mv /tmp/k9s /usr/local/bin/
+    rm k9s_Linux_amd64.tar.gz
+  args:
+    creates: /usr/local/bin/k9s
+# install terraform
+- name: Install terraform
+  become: yes
+  shell: |
+    curl -LsO https://releases.hashicorp.com/terraform/{{ terraform }}/terraform_{{ terraform }}_linux_amd64.zip
+    unzip terraform_{{ terraform }}_linux_amd64.zip
+    chmod a+x terraform
+    sudo mv terraform /usr/local/bin/
+    rm terraform_{{ terraform }}_linux_amd64.zip
+  args:
+    creates: /usr/local/bin/terraform
+# install kubectl
+- name: Install kubectl
+  become: yes
+  shell: |
+    curl -LsO https://storage.googleapis.com/kubernetes-release/release/{{ kubectl }}/bin/linux/amd64/kubectl
+    chmod a+x kubectl
+    sudo mv kubectl /usr/local/bin/
+  args:
+    creates: /usr/local/bin/kubectl
+# install fzf
+- name: Install fzf
+  become: yes
+  ansible.builtin.apt:
+    name: fzf
     state: latest
-- name: Update python packages
-  pip:
-    name: 
-      - tern
-    state: latest
+# update source path for fzf in bashrc
+- name: Update source path for fzf in bashrc
+  ansible.builtin.lineinfile:
+    path: "~/.bashrc"
+    line: eval "$(fzf --bash)"
+    state: present
+    insertafter: EOF
+- name: Install fzf completions 
+  ansible.builtin.lineinfile:
+    path: "/home/{{ remote_user }}/.bashrc"
+    line: "[ -f /usr/share/bash-completion/completions/fzf ] && source /usr/share/bash-completion/completions/fzf"
+    create: yes
 
+- name: Install fzf keybindings 
+  ansible.builtin.lineinfile:
+    path: "/home/{{ remote_user }}/.bashrc"
+    line: "[ -f /usr/share/doc/fzf/examples/key-bindings.bash ] && source /usr/share/doc/fzf/examples/key-bindings.bash"
+    create: yes

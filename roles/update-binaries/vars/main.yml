@@ -1,5 +1,8 @@
-k9s: k9s
+k9s: v0.32.5
 exa: exa
 jq: jq
 yq: yq
 k8s: k3d
+terraform: 1.7.5
+kubectl: v1.28.4
+remote_user: jsunnyge
