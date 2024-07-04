@@ -60,3 +60,29 @@
     path: "/home/{{ remote_user }}/.bashrc"
     line: "[ -f /usr/share/doc/fzf/examples/key-bindings.bash ] && source /usr/share/doc/fzf/examples/key-bindings.bash"
     create: yes
+- name: Install docker components
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - docker.io
+    - docker-compose
+    - docker-buildx
+- name: Create the docker group
+  become: yes
+  ansible.builtin.group:
+    name: docker
+    state: present
+- name: Add docker group to sudo less
+  become: yes
+  ansible.builtin.user:
+    name: "{{ remote_user }}"
+    groups: docker
+    append: yes
+- name: Install visual studio code
+  become: yes
+  ansible.builtin.apt:
+    name: code
+    state: latest
+  
