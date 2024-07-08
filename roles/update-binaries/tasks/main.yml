@@ -48,14 +48,9 @@
 - name: Install databricks cli
   become: yes
   shell: |
-    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
-# update source path for fzf in bashrc
-- name: Update source path for fzf in bashrc
-  ansible.builtin.lineinfile:
-    path: "~/.bashrc"
-    line: eval "$(fzf --bash)"
-    state: present
-    insertafter: EOF
+    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/v0.222.0/install.sh | sh
+  args:
+    creates: /usr/local/bin/databricks
 - name: Install fzf completions 
   ansible.builtin.lineinfile:
     path: "/home/{{ remote_user }}/.bashrc"
@@ -83,4 +78,12 @@
   ansible.builtin.apt:
     name: code
     state: latest
-  
+# Enable touchpad gestures
+- name: Enable touchpad gestures
+  become: yes
+  shell: |
+    sudo add-apt-repository ppa:touchegg/stable
+    sudo apt install -y touchegg
+    sudo apt install -y gnome-shell-extension-touchpadgestures
+  args:
+    creates: /usr/bin/touchegg
