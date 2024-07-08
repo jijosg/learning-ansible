@@ -1,10 +1,18 @@
 ---
-# install curl
-- name: Install curl
+
+- name: Install apt components
   become: yes
-  package:
-    name: curl
-    state: present
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - curl
+    - make
+    - gawk
+    - fzf
+    - docker.io
+    - docker-compose
+    - docker-buildx
 # install derailed/k9s 
 - name: Install k9s
   become: yes
@@ -36,12 +44,11 @@
     sudo mv kubectl /usr/local/bin/
   args:
     creates: /usr/local/bin/kubectl
-# install fzf
-- name: Install fzf
+# Install databricks cli
+- name: Install databricks cli
   become: yes
-  ansible.builtin.apt:
-    name: fzf
-    state: latest
+  shell: |
+    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 # update source path for fzf in bashrc
 - name: Update source path for fzf in bashrc
   ansible.builtin.lineinfile:
@@ -60,15 +67,6 @@
     path: "/home/{{ remote_user }}/.bashrc"
     line: "[ -f /usr/share/doc/fzf/examples/key-bindings.bash ] && source /usr/share/doc/fzf/examples/key-bindings.bash"
     create: yes
-- name: Install docker components
-  become: yes
-  ansible.builtin.apt:
-    name: "{{ item }}"
-    state: latest
-  loop:
-    - docker.io
-    - docker-compose
-    - docker-buildx
 - name: Create the docker group
   become: yes
   ansible.builtin.group:
