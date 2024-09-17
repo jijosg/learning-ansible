@@ -1,7 +1,7 @@
 ---
 
 - name: Install apt components
-  become: yes
+  become: true
   ansible.builtin.apt:
     name: "{{ item }}"
     state: latest
@@ -13,9 +13,10 @@
     - docker.io
     - docker-compose
     - docker-buildx
+    - neovim
 # install derailed/k9s 
 - name: Install k9s
-  become: yes
+  become: true
   shell: |
     curl -LsO https://github.com/derailed/k9s/releases/download/{{ k9s }}/k9s_Linux_amd64.tar.gz
     tar -xvzf k9s_Linux_amd64.tar.gz -C /tmp k9s
@@ -26,7 +27,7 @@
     creates: /usr/local/bin/k9s
 # install terraform
 - name: Install terraform
-  become: yes
+  become: true
   shell: |
     curl -LsO https://releases.hashicorp.com/terraform/{{ terraform }}/terraform_{{ terraform }}_linux_amd64.zip
     unzip terraform_{{ terraform }}_linux_amd64.zip
@@ -37,7 +38,7 @@
     creates: /usr/local/bin/terraform
 # install kubectl
 - name: Install kubectl
-  become: yes
+  become: true
   shell: |
     curl -LsO https://storage.googleapis.com/kubernetes-release/release/{{ kubectl }}/bin/linux/amd64/kubectl
     chmod a+x kubectl
@@ -46,7 +47,7 @@
     creates: /usr/local/bin/kubectl
 # Install databricks cli
 - name: Install databricks cli
-  become: yes
+  become: true
   shell: |
     curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/v0.222.0/install.sh | sh
   args:
@@ -63,27 +64,51 @@
     line: "[ -f /usr/share/doc/fzf/examples/key-bindings.bash ] && source /usr/share/doc/fzf/examples/key-bindings.bash"
     create: yes
 - name: Create the docker group
-  become: yes
+  become: true
   ansible.builtin.group:
     name: docker
     state: present
 - name: Add docker group to sudo less
-  become: yes
+  become: true
   ansible.builtin.user:
     name: "{{ remote_user }}"
     groups: docker
     append: yes
 - name: Install visual studio code
-  become: yes
+  become: true
   ansible.builtin.apt:
     name: code
     state: latest
 # Enable touchpad gestures
 - name: Enable touchpad gestures
-  become: yes
+  become: true
   shell: |
     sudo add-apt-repository ppa:touchegg/stable
     sudo apt install -y touchegg
     sudo apt install -y gnome-shell-extension-touchpadgestures
   args:
     creates: /usr/bin/touchegg
+# Install azure cli
+- name: Install azure cli
+  become: true
+  shell: |
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+  args:
+    creates: /usr/bin/az
+# Install k3d
+- name: Install k3d
+  become: true
+  shell: |
+    curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+  args:
+    creates: /usr/local/bin/k3d
+# Install helm
+- name: Install helm
+  become: true
+  shell: |
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+    chmod 700 get_helm.sh
+    ./get_helm.sh
+    rm -rf ./get_helm.sh
+  args:
+    creates: /usr/local/bin/helm
