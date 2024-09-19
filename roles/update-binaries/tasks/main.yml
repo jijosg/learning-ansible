@@ -9,7 +9,6 @@
     - curl
     - make
     - gawk
-    - fzf
     - docker.io
     - docker-compose
     - docker-buildx
@@ -52,11 +51,6 @@
     curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/v0.222.0/install.sh | sh
   args:
     creates: /usr/local/bin/databricks
-- name: Install fzf completions 
-  ansible.builtin.lineinfile:
-    path: "/home/{{ remote_user }}/.bashrc"
-    line: "[ -f /usr/share/bash-completion/completions/fzf ] && source /usr/share/bash-completion/completions/fzf"
-    create: yes
 
 - name: Install fzf keybindings 
   ansible.builtin.lineinfile:
